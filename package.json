@@ -18,6 +18,7 @@
     "nodemailer": "^8.0.10",
     "ejs": "^6.0.1",
     "resend": "^6.12.4",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "@getbrevo/brevo": "^5.0.4"
   }
 }
