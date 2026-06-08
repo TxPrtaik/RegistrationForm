@@ -21,46 +21,21 @@ async function sendMail(to, link, name) {
         ],
         subject: "Application Received – Accenture",
         htmlContent: `
-          <!DOCTYPE html>
-          <html>
-            <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-              
-              <p>Dear ${name},</p>
-
-              <p>Greetings from Accenture!</p>
-
-              <p>
-                We are pleased to inform you that we have successfully received your application.
-              </p>
-
-              <p>
-                To proceed further, click below:
-              </p>
-
-              <p>
-                <a href="${link}"
-                   style="background:#0a66c2;color:#fff;padding:10px 15px;
-                   text-decoration:none;border-radius:5px;display:inline-block;">
-                  Proceed to Next Step
-                </a>
-              </p>
-
-              <p>Best Regards,<br/>
-              <strong>Accenture Recruitment Team</strong></p>
-
-            </body>
-          </html>
+          <p>Dear ${name},</p>
+          <p>Your application is received.</p>
+          <a href="${link}">Proceed</a>
         `,
       }),
     });
 
     const data = await response.json();
 
-    console.log("✅ Email sent:", data);
+    console.log("📩 Brevo Response:", data);
+
     return data;
 
   } catch (err) {
-    console.error("❌ Brevo error:", err);
+    console.error("❌ Send error:", err);
   }
 }
 
