@@ -23,3 +23,4 @@ async function sendMail(to, link, name) {
         console.log(err);
     }
 }
+module.export=sendMail;
