@@ -3,24 +3,24 @@ const nodemailer = require("nodemailer");
 
 async function sendMail(to, link, name) {
   try {
-    // Create transporter (SMTP config)
+    // ✅ SMTP Transporter (FIXED FOR RENDER IPv6 ISSUE)
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 587,
-      secure: false, // false for 587
+      secure: false,
+      family: 4, // ⭐ IMPORTANT FIX (forces IPv4, solves ENETUNREACH)
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 15000,
+      socketTimeout: 15000,
     });
 
-    // Verify connection (helps debug on Render)
+    // Optional: verify connection (good for debugging)
     await transporter.verify();
 
-    // HTML email content
+    // ✅ HTML Email Template
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -31,15 +31,17 @@ async function sendMail(to, link, name) {
           <p>Greetings from Accenture!</p>
 
           <p>
-            We are pleased to inform you that we have successfully received your application.
+            We are pleased to inform you that we have successfully received your application
+            for opportunities at Accenture.
           </p>
 
           <p>
-            To proceed further, please select your preferred role by clicking below:
+            To proceed further in the recruitment process, please select your preferred role
+            by clicking the link below:
           </p>
 
           <p>
-            <a href="${link}" 
+            <a href="${link}"
                style="background:#0a66c2;color:#fff;padding:10px 15px;
                text-decoration:none;border-radius:5px;display:inline-block;">
               Proceed to Next Step
@@ -47,7 +49,11 @@ async function sendMail(to, link, name) {
           </p>
 
           <p>
-            Kindly complete the process at the earliest.
+            Kindly complete the process at the earliest to continue with your application.
+          </p>
+
+          <p>
+            If you face any issues, feel free to contact us.
           </p>
 
           <br/>
@@ -59,7 +65,7 @@ async function sendMail(to, link, name) {
       </html>
     `;
 
-    // Mail options
+    // ✅ Mail Options
     const mailOptions = {
       from: `"Accenture Recruitment" <${process.env.EMAIL_USER}>`,
       to: to,
@@ -67,15 +73,14 @@ async function sendMail(to, link, name) {
       html: htmlContent,
     };
 
-    // Send email
+    // ✅ Send Email
     const info = await transporter.sendMail(mailOptions);
 
-    console.log("Email sent successfully:", info.messageId);
-
+    console.log("✅ Email sent successfully:", info.messageId);
     return info;
 
   } catch (error) {
-    console.error("Error sending email:", error);
+    console.error("❌ Error sending email:", error);
     throw error;
   }
 }
