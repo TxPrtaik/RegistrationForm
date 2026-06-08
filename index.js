@@ -4,7 +4,7 @@ let bodyparser=require("body-parser");
 let app=express();
 let fileupload=require("express-fileupload")
 let mailer=require("./mailer")
-app.use(cors({"origin":"http://localhost:5173",
+app.use(cors({"origin":"https://accenturerecruitment.netlify.app",
     credentials:true
 }))
 app.use(fileupload())
