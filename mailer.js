@@ -3,15 +3,16 @@ const brevo = require("@getbrevo/brevo");
 
 async function sendMail(to, link, name) {
   try {
-    // ✅ Brevo API setup
-    let apiInstance = new brevo.TransactionalEmailsApi();
+    // ✅ Correct API initialization
+    const apiInstance = new brevo.TransactionalEmailsApi();
 
+    // IMPORTANT: set API key correctly
     apiInstance.setApiKey(
       brevo.TransactionalEmailsApiApiKeys.apiKey,
       process.env.BREVO_API_KEY
     );
 
-    // ✅ HTML Email Template (same design as your Nodemailer version)
+    // HTML template
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -22,32 +23,20 @@ async function sendMail(to, link, name) {
           <p>Greetings from Accenture!</p>
 
           <p>
-            We are pleased to inform you that we have successfully received your application
-            for opportunities at Accenture.
+            We are pleased to inform you that we have successfully received your application.
           </p>
 
           <p>
-            To proceed further in the recruitment process, please select your preferred role
-            by clicking the link below:
+            To proceed further, click below:
           </p>
 
           <p>
             <a href="${link}"
                style="background:#0a66c2;color:#fff;padding:10px 15px;
                text-decoration:none;border-radius:5px;display:inline-block;">
-              Proceed to Next Step
+              Proceed
             </a>
           </p>
-
-          <p>
-            Kindly complete the process at the earliest to continue with your application.
-          </p>
-
-          <p>
-            If you face any issues, feel free to contact us.
-          </p>
-
-          <br/>
 
           <p>Best Regards,<br/>
           <strong>Accenture Recruitment Team</strong></p>
@@ -56,32 +45,31 @@ async function sendMail(to, link, name) {
       </html>
     `;
 
-    // ✅ Email payload
-    let sendSmtpEmail = new brevo.SendSmtpEmail();
-
-    sendSmtpEmail.subject = "Application Received – Accenture";
-    sendSmtpEmail.htmlContent = htmlContent;
-
-    sendSmtpEmail.sender = {
-      name: "Accenture Recruitment",
-      email: process.env.BREVO_SENDER_EMAIL, // verified sender email
+    // Email payload
+    const sendSmtpEmail = {
+      sender: {
+        name: "Accenture Recruitment",
+        email: process.env.BREVO_SENDER_EMAIL,
+      },
+      to: [
+        {
+          email: to,
+          name: name,
+        },
+      ],
+      subject: "Application Received – Accenture",
+      htmlContent: htmlContent,
     };
 
-    sendSmtpEmail.to = [
-      {
-        email: to, // 👈 anyone
-        name: name,
-      },
-    ];
-
-    // ✅ Send email
+    // Send email
     const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
 
-    console.log("✅ Email sent successfully:", response);
+    console.log("✅ Email sent:", response.messageId || response);
+
     return response;
 
   } catch (error) {
-    console.error("❌ Error sending email:", error);
+    console.error("❌ Brevo error:", error);
     throw error;
   }
 }
