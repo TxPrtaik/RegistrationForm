@@ -17,6 +17,7 @@
     "express-fileupload": "^1.5.2",
     "nodemailer": "^8.0.10",
     "ejs": "^6.0.1",
-    "resend": "^6.12.4"
+    "resend": "^6.12.4",
+    "dotenv": "^17.4.2"
   }
 }
