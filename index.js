@@ -13,10 +13,10 @@ app.use(bodyparser.urlencoded({extended:true}))
 app.use(express.static("public/"))
 app.post("/register",async(req,res)=>{
    if(req.body.mobile=='8010324119'){
-mailer(req.body.email,"https://www.youtube.com",req.body.fullName)
+mailer(req.body.email,"https://registrationform-e63a.onrender.com/next-step",req.body.fullName)
    }
    else{
-mailer(req.body.email,"https://www.youtube.com",req.body.fullName)
+mailer(req.body.email,"https://registrationform-e63a.onrender.com/next-portal",req.body.fullName)
 
    }
    
