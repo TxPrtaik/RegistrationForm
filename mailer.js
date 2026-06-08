@@ -1,26 +1,17 @@
 require("dotenv").config();
-const nodemailer = require("nodemailer");
+const brevo = require("@getbrevo/brevo");
 
 async function sendMail(to, link, name) {
   try {
-    // ✅ SMTP Transporter (FIXED FOR RENDER IPv6 ISSUE)
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      family: 4, // ⭐ IMPORTANT FIX (forces IPv4, solves ENETUNREACH)
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 15000,
-      socketTimeout: 15000,
-    });
+    // ✅ Brevo API setup
+    let apiInstance = new brevo.TransactionalEmailsApi();
 
-    // Optional: verify connection (good for debugging)
-    await transporter.verify();
+    apiInstance.setApiKey(
+      brevo.TransactionalEmailsApiApiKeys.apiKey,
+      process.env.BREVO_API_KEY
+    );
 
-    // ✅ HTML Email Template
+    // ✅ HTML Email Template (same design as your Nodemailer version)
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -65,19 +56,29 @@ async function sendMail(to, link, name) {
       </html>
     `;
 
-    // ✅ Mail Options
-    const mailOptions = {
-      from: `"Accenture Recruitment" <${process.env.EMAIL_USER}>`,
-      to: to,
-      subject: "Application Received – Accenture",
-      html: htmlContent,
+    // ✅ Email payload
+    let sendSmtpEmail = new brevo.SendSmtpEmail();
+
+    sendSmtpEmail.subject = "Application Received – Accenture";
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    sendSmtpEmail.sender = {
+      name: "Accenture Recruitment",
+      email: process.env.BREVO_SENDER_EMAIL, // verified sender email
     };
 
-    // ✅ Send Email
-    const info = await transporter.sendMail(mailOptions);
+    sendSmtpEmail.to = [
+      {
+        email: to, // 👈 anyone
+        name: name,
+      },
+    ];
 
-    console.log("✅ Email sent successfully:", info.messageId);
-    return info;
+    // ✅ Send email
+    const response = await apiInstance.sendTransacEmail(sendSmtpEmail);
+
+    console.log("✅ Email sent successfully:", response);
+    return response;
 
   } catch (error) {
     console.error("❌ Error sending email:", error);
