@@ -1,43 +1,25 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-async function sendMail(to,link,name) {
+const resend = new Resend("re_KV1CMj7H_8Yy5mCbw32Nvg2PKtZPVb4A1");
 
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: "recrutire.accentrue@gmail.com",
-            pass: "kvac hitr altn romz"
-        }
-    });
+async function sendMail(to, link, name) {
 
-    // Email options
-    const mailOptions = {
-        from: "recrutire.accentrue@gmail.com",
-        to: to,
-        subject: "Application Received – Proceed to Select Your Role",
-        text:`Dear ${name},
+    try {
 
-Greetings from Accenture!
+        const data = await resend.emails.send({
+            from: "onboarding@resend.dev",
+            to: to,
+            subject: "Application Received",
+            html: `
+                <h2>Hello ${name}</h2>
+                <p>Your application has been received.</p>
+                <a href="${link}">Proceed Here</a>
+            `
+        });
 
-We are pleased to inform you that we have successfully received your application for opportunities at Accenture.
+        console.log(data);
 
-To proceed further in the recruitment process, please select your preferred role by clicking the link below:
-
-Proceed Link: ${link}
-
-Kindly complete the process at the earliest to continue with your application.
-
-If you face any issues, feel free to contact us.
-
-Best Regards,
-Accenture Recruitment Team`
-    };
-
-    // Send mail
-    const info = await transporter.sendMail(mailOptions);
-
-    console.log("Email sent:", info.response);
+    } catch(err) {
+        console.log(err);
+    }
 }
-module.exports=sendMail;
-//sendMail().catch(console.error);
